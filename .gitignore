@@ -30,10 +30,10 @@ ENV/
 env.bak/
 venv.bak/
 
-# Environment variables
-.env
+# Environment variables (keep main .env for docker-compose)
 .env.local
 .env.production
+.env.development
 
 # IDE
 .vscode/
@@ -93,7 +93,34 @@ poetry.lock
 node_modules/
 package-lock.json
 
+# SSL Certificates (security sensitive)
+ssl/private.key
+ssl/*.key
+ssl/*.csr
+ssl/*.p12
+ssl/*.pfx
+
+# Docker volumes
+postgres_data/
+nginx_logs/
+
+# Backup directories
+backups/
+backup_*/
+
 # Local development
 local_config.py
 test_data/
 sample_data/
+
+# Scripts (temporary files)
+*_temp.sh
+migrate_*.sh
+setup_*.sh
+
+# Cache directories
+.cache/
+__pycache__/
+
+# Development containers
+.devcontainer/

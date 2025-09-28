@@ -4,7 +4,7 @@ Notification services for stock alerts and critical events
 
 from typing import Dict, List, Any, Optional, Union
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func, desc
+from sqlalchemy import and_, or_, func, desc, text
 from datetime import datetime, date, timedelta
 from enum import Enum
 
@@ -85,7 +85,7 @@ class NotificationService:
 
             # Test database connectivity
             try:
-                self.db.execute("SELECT 1")
+                self.db.execute(text("SELECT 1"))
             except Exception as db_error:
                 raise Exception(f"Database connection failed: {db_error}")
 

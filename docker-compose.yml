@@ -25,8 +25,8 @@ services:
     environment:
       - DB_HOST=db
       - DB_PORT=5432
-    ports:
-      - "${APP_PORT:-8501}:8501"
+    expose:
+      - "8501"
     volumes:
       - ./app:/app
       - ./logs:/app/logs
@@ -36,6 +36,47 @@ services:
       - inventory_network
     restart: unless-stopped
     command: streamlit run main.py --server.address 0.0.0.0 --server.port 8501
+
+  nginx:
+    image: nginx:alpine
+    container_name: inventory_nginx
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - inventory_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ssl-generator:
+    image: alpine/openssl
+    container_name: inventory_ssl_generator
+    volumes:
+      - ./ssl:/ssl
+    command: >
+      sh -c "if [ ! -f /ssl/certificate.crt ]; then
+        echo 'Generating SSL certificates...';
+        openssl genrsa -out /ssl/private.key 4096 &&
+        openssl req -new -key /ssl/private.key -out /ssl/cert.csr -subj '/C=DE/ST=Germany/L=Berlin/O=Inventory Management System/OU=IT Department/CN=localhost/emailAddress=admin@company.com' &&
+        openssl x509 -req -days 365 -in /ssl/cert.csr -signkey /ssl/private.key -out /ssl/certificate.crt &&
+        cat /ssl/certificate.crt > /ssl/fullchain.pem &&
+        chmod 600 /ssl/private.key &&
+        chmod 644 /ssl/certificate.crt /ssl/fullchain.pem /ssl/cert.csr &&
+        echo 'SSL certificates generated successfully!';
+      else
+        echo 'SSL certificates already exist, skipping generation.';
+      fi"
+    profiles: ["ssl-setup"]
 
   adminer:
     image: adminer:4.8.1
@@ -53,6 +94,7 @@ services:
 
 volumes:
   postgres_data:
+  nginx_logs:
 
 networks:
   inventory_network:

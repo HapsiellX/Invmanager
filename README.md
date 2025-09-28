@@ -2,7 +2,7 @@
 
 Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel und Standorte mit erweiterten Funktionen für Analytics, QR-Code-Generation und Benachrichtigungen.
 
-## 🚀 Version 0.3.1 - Production Ready & Bug-Free
+## 🚀 Version 0.4.0 - HTTPS-Only Security Release
 
 ### ✨ Features
 
@@ -10,7 +10,7 @@ Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel 
 - **Hardware Inventar**: Vollständige Verwaltung mit technischen Details, Standorten und Garantie-Tracking
 - **Kabel Inventar**: Bestandsmanagement mit Mindest-/Höchstbeständen und automatischen Alerts
 - **Standort Management**: Hierarchische Struktur mit Adress- und Kontaktinformationen
-- **Benutzer Management**: Rollenbasierte Zugriffskontrolle (Admin, Netzwerker, Auszubildende)
+- **Benutzer Management**: Rollenbasierte Zugriffskontrolle mit Passwort-Änderung (Admin, Netzwerker, Auszubildende)
 
 #### 📊 **Analytics & Reporting**
 - **Dashboard**: Übersicht über Bestände, Werte und kritische Alerts
@@ -35,6 +35,7 @@ Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel 
 - **Backend**: FastAPI + SQLAlchemy + PostgreSQL
 - **Frontend**: Streamlit (Multi-Page App)
 - **Database**: PostgreSQL 15 mit SQLAlchemy ORM
+- **Security**: HTTPS-only mit nginx Reverse Proxy, SSL/TLS 1.2+
 - **Containerization**: Docker + Docker Compose
 - **Authentication**: Session-based mit bcrypt
 - **Analytics**: Pandas + Plotly für Visualisierungen
@@ -54,11 +55,12 @@ Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel 
 git clone https://github.com/HapsiellX/invmanager.git
 cd invmanager
 
-# Umgebung starten
+# HTTPS-System starten
 docker-compose up -d
 
 # Warten bis alle Services bereit sind (ca. 30 Sekunden)
-# Anwendung öffnen: http://localhost:8501
+# SICHERER Zugang über HTTPS: https://localhost
+# HTTP wird automatisch zu HTTPS umgeleitet
 ```
 
 ### Standard Login
@@ -94,9 +96,16 @@ inventory-management/
 │   └── debug/               # Debug Tools
 ├── database/                 # Database Files
 ├── backups/                  # Backup Storage
-├── docker-compose.yml        # Docker Configuration
+├── nginx/                     # HTTPS Reverse Proxy
+│   └── nginx.conf            # SSL/HTTPS Konfiguration
+├── ssl/                      # SSL Zertifikate
+│   ├── certificate.crt       # SSL Zertifikat
+│   ├── private.key          # Privater Schlüssel
+│   └── fullchain.pem        # Zertifikatskette
+├── docker-compose.yml        # Docker Configuration (HTTPS)
 ├── Dockerfile               # Container Definition
 ├── requirements.txt         # Python Dependencies
+├── HTTPS_SETUP.md          # HTTPS Dokumentation
 └── README.md               # Diese Datei
 ```
 
@@ -117,7 +126,9 @@ STREAMLIT_SERVER_PORT=8501
 
 ### Docker Compose
 Das System läuft standardmäßig mit:
-- **App**: Port 8501
+- **HTTPS**: Port 443 (nginx SSL Proxy)
+- **HTTP**: Port 80 (automatischer Redirect zu HTTPS)
+- **App**: Port 8501 (intern über nginx)
 - **Database**: Port 5432 (PostgreSQL)
 
 ## 👥 User Roles
@@ -161,7 +172,16 @@ Das System läuft standardmäßig mit:
 
 ## 🔄 Version History
 
-### v0.3.1 (Latest) - Production Ready & Bug-Free
+### v0.4.0 (Latest) - HTTPS-Only Security Release
+- 🔐 **HTTPS-Only Implementation**: Vollständige SSL/TLS Verschlüsselung mit nginx Reverse Proxy
+- 🛡️ **Security Headers**: HSTS, CSP, XSS Protection, Frame Options
+- 🔧 **User Profile Management**: Passwort-Änderung für alle Benutzerrollen
+- 🚀 **HTTP/2 Support**: Moderne Performance-Optimierungen
+- 🔄 **Auto-Redirect**: Automatische Umleitung von HTTP zu HTTPS
+- 📱 **Self-Signed Certificates**: Automatische SSL-Zertifikat Generierung
+- 🔍 **Enhanced Security**: Umfassende Sicherheitsverbesserungen
+
+### v0.3.1 - Production Ready & Bug-Free
 - ✅ **FINAL FIX**: Persistent notification AttributeError komplett behoben
 - ✅ Enhanced safe attribute accessor mit vollständiger ORM/Dictionary Kompatibilität
 - ✅ Comprehensive database error handling mit graceful degradation
@@ -192,9 +212,24 @@ Das System läuft standardmäßig mit:
 
 ## 🛡️ Security Features
 
-- **Rollenbasierte Zugriffskontrolle**
+### 🔐 **HTTPS & SSL/TLS**
+- **HTTPS-Only**: Alle Verbindungen vollständig verschlüsselt
+- **TLS 1.2/1.3**: Moderne Verschlüsselungsstandards
+- **Perfect Forward Secrecy**: Enhanced Key Exchange
+- **HTTP to HTTPS Redirect**: Automatische sichere Umleitung
+
+### 🔒 **Security Headers**
+- **HSTS**: HTTP Strict Transport Security (1 Jahr)
+- **CSP**: Content Security Policy
+- **XSS Protection**: Cross-Site Scripting Schutz
+- **Frame Options**: Clickjacking-Schutz
+- **Content Type Protection**: MIME-Type Sniffing Schutz
+
+### 👤 **Authentication & Authorization**
+- **Rollenbasierte Zugriffskontrolle** (Admin, Netzwerker, Auszubildende)
 - **Session Management** mit automatischem Timeout
-- **Password Hashing** mit bcrypt
+- **Password Hashing** mit bcrypt (12 Rounds)
+- **User Profile Management** mit sicherer Passwort-Änderung
 - **Audit Logging** für alle kritischen Aktionen
 - **Input Validation** und SQL Injection Schutz
 
@@ -265,6 +300,9 @@ Dieses Projekt ist unter der MIT License lizenziert - siehe [LICENSE](LICENSE) D
 
 ## 🎯 Roadmap
 
+- [x] **HTTPS-Only Security** ✅ (v0.4.0)
+- [x] **User Profile Management** ✅ (v0.4.0)
+- [ ] Production SSL Certificates (Let's Encrypt Integration)
 - [ ] Mobile-responsive UI
 - [ ] REST API für externe Integration
 - [ ] Advanced Reporting mit Charts
@@ -272,6 +310,14 @@ Dieses Projekt ist unter der MIT License lizenziert - siehe [LICENSE](LICENSE) D
 - [ ] LDAP/AD Integration
 - [ ] Email Notifications
 - [ ] Asset Lifecycle Management
+
+### 🔐 Security Roadmap
+- [x] HTTPS-Only Implementation
+- [x] Security Headers (HSTS, CSP, etc.)
+- [ ] WAF (Web Application Firewall)
+- [ ] Rate Limiting & DDoS Protection
+- [ ] Two-Factor Authentication (2FA)
+- [ ] Single Sign-On (SSO)
 
 ## 🆘 Support
 

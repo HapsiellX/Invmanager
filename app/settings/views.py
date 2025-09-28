@@ -9,35 +9,46 @@ from typing import Dict, Any
 from core.security import require_auth, SessionManager
 from core.database import get_db
 from settings.services import get_settings_service
+from auth.services import get_auth_service
 
 
 @require_auth
 def show_settings_page():
     """
-    Main settings page for administrators
+    Settings page with user profile and admin settings
     """
-    # Check admin permissions
-    if not SessionManager.has_permission("admin"):
-        st.error("Sie haben keine Berechtigung für diese Seite.")
-        return
+    st.header("⚙️ Einstellungen")
 
-    st.header("⚙️ System-Einstellungen")
+    # Check if user has admin permissions for system settings
+    is_admin = SessionManager.has_permission("admin")
 
-    # Get settings service
-    settings_service = get_settings_service()
+    if is_admin:
+        # Get settings service for admin
+        settings_service = get_settings_service()
+        categories = settings_service.get_categories()
+        tab_names = ["👤 Benutzerprofil"] + [cat.title() for cat in categories] + ["➕ Neue Einstellung"]
+    else:
+        # Non-admin users only see user profile
+        tab_names = ["👤 Benutzerprofil"]
 
-    # Create tabs for different setting categories
-    categories = settings_service.get_categories()
-    category_tabs = st.tabs([cat.title() for cat in categories] + ["➕ Neue Einstellung"])
+    category_tabs = st.tabs(tab_names)
 
-    # Show settings for each category
-    for i, category in enumerate(categories):
-        with category_tabs[i]:
-            show_category_settings(settings_service, category)
+    # User profile tab (available to all users)
+    with category_tabs[0]:
+        show_user_profile_tab()
 
-    # New setting tab
-    with category_tabs[-1]:
-        show_create_setting_form(settings_service)
+    # Admin-only tabs
+    if is_admin:
+        settings_service = get_settings_service()
+
+        # Show settings for each category
+        for i, category in enumerate(categories):
+            with category_tabs[i + 1]:
+                show_category_settings(settings_service, category)
+
+        # New setting tab
+        with category_tabs[-1]:
+            show_create_setting_form(settings_service)
 
 
 def show_category_settings(settings_service, category: str):
@@ -270,6 +281,120 @@ def show_create_setting_form(settings_service):
                     st.rerun()
                 else:
                     st.error("Fehler beim Erstellen der Einstellung.")
+
+
+def show_user_profile_tab():
+    """Show user profile settings including password change"""
+    st.subheader("👤 Benutzerprofil")
+
+    current_user = SessionManager.get_current_user()
+
+    # Display current user info
+    st.markdown("### 📋 Aktuelle Benutzerinformationen")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.info(f"**Benutzername:** {current_user['benutzername']}")
+        st.info(f"**E-Mail:** {current_user['email']}")
+        st.info(f"**Rolle:** {current_user['rolle'].title()}")
+
+    with col2:
+        st.info(f"**Vorname:** {current_user['vorname']}")
+        st.info(f"**Nachname:** {current_user['nachname']}")
+        if current_user.get('abteilung'):
+            st.info(f"**Abteilung:** {current_user['abteilung']}")
+
+    st.divider()
+
+    # Password change form
+    st.markdown("### 🔐 Passwort ändern")
+
+    with st.form("password_change_form"):
+        st.markdown("**Passwort aktualisieren**")
+
+        old_password = st.text_input(
+            "Aktuelles Passwort*",
+            type="password",
+            help="Geben Sie Ihr aktuelles Passwort ein"
+        )
+
+        new_password = st.text_input(
+            "Neues Passwort*",
+            type="password",
+            help="Mindestens 8 Zeichen empfohlen"
+        )
+
+        confirm_password = st.text_input(
+            "Neues Passwort bestätigen*",
+            type="password",
+            help="Wiederholen Sie das neue Passwort"
+        )
+
+        submit_password = st.form_submit_button("Passwort ändern", type="primary")
+
+        if submit_password:
+            # Validation
+            if not all([old_password, new_password, confirm_password]):
+                st.error("Bitte füllen Sie alle Felder aus.")
+            elif new_password != confirm_password:
+                st.error("Die neuen Passwörter stimmen nicht überein.")
+            elif len(new_password) < 6:
+                st.error("Das neue Passwort muss mindestens 6 Zeichen lang sein.")
+            elif old_password == new_password:
+                st.error("Das neue Passwort muss sich vom aktuellen Passwort unterscheiden.")
+            else:
+                # Change password
+                auth_service = get_auth_service()
+                success = auth_service.change_password(
+                    current_user['id'],
+                    old_password,
+                    new_password
+                )
+
+                if success:
+                    st.success("✅ Passwort wurde erfolgreich geändert!")
+                    st.info("⚠️ Bitte melden Sie sich mit dem neuen Passwort erneut an.")
+
+                    # Optional: Auto-logout after password change
+                    if st.button("Jetzt abmelden"):
+                        SessionManager.logout_user()
+                        st.rerun()
+                else:
+                    st.error("❌ Passwort konnte nicht geändert werden. Überprüfen Sie Ihr aktuelles Passwort.")
+
+    st.divider()
+
+    # User activity info
+    st.markdown("### 📊 Kontoinformationen")
+    col3, col4 = st.columns(2)
+
+    with col3:
+        if current_user.get('erstellt_am'):
+            st.info(f"**Registriert:** {current_user['erstellt_am']}")
+        if current_user.get('letzter_login'):
+            st.info(f"**Letzter Login:** {current_user['letzter_login']}")
+
+    with col4:
+        if current_user.get('telefon'):
+            st.info(f"**Telefon:** {current_user['telefon']}")
+        st.info(f"**Status:** {'✅ Aktiv' if current_user.get('ist_aktiv', True) else '❌ Inaktiv'}")
+
+    # Security note
+    st.markdown("### 🛡️ Sicherheitshinweise")
+    st.markdown("""
+    **Tipps für ein sicheres Passwort:**
+    - Verwenden Sie mindestens 8 Zeichen
+    - Kombinieren Sie Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen
+    - Verwenden Sie keine persönlichen Informationen
+    - Ändern Sie Ihr Passwort regelmäßig
+    - Teilen Sie Ihr Passwort niemals mit anderen
+    """)
+
+    if current_user['rolle'] == 'admin':
+        st.markdown("---")
+        st.markdown("### ⚙️ Administrator-Hinweise")
+        st.info("Als Administrator haben Sie Zugriff auf alle Systemeinstellungen in den anderen Tabs.")
+        st.warning("⚠️ Bei Änderungen an kritischen Einstellungen kann ein Systemneustart erforderlich sein.")
 
 
 def show_settings_overview():
