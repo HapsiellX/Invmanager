@@ -1,61 +1,61 @@
-# 📚 Dokumentation - Inventory Management System
+# 📚 Documentation - Inventory Management System
 
-Hier finden Sie alle umfassenden Dokumentationen für das Inventory Management System.
+Welcome to the comprehensive documentation for the Inventory Management System.
 
-## 📖 Übersicht der Dokumentation
+## 🌍 Language Selection / Sprachauswahl
 
-### 🚀 **Haupt-Dokumentationen**
-- **[CHANGELOG.md](CHANGELOG.md)** - Vollständige Versionshistorie und Änderungen
-- **[CAMERA_SCANNER.md](CAMERA_SCANNER.md)** - Detaillierte Anleitung für die Kamera-Scanner-Funktionen
+Choose your preferred language for the documentation:
 
-### 🔧 **Entwickler-Dokumentationen**
-- **[CLAUDE.md](CLAUDE.md)** - AI Development Guide für kontinuierliche Entwicklung
-- **[PRD_Inventory_Management_System.md](PRD_Inventory_Management_System.md)** - Product Requirements Document
+### 🇩🇪 **[Deutsch (German)](de/README.md)**
+Vollständige deutsche Dokumentation mit allen technischen Details und Anleitungen.
 
-### 🛠️ **Setup & Deployment**
-- **[HTTPS_SETUP.md](HTTPS_SETUP.md)** - HTTPS-Konfiguration und SSL-Setup
-- **[DEPLOYMENT_FIXES.md](DEPLOYMENT_FIXES.md)** - Deployment-Probleme und Lösungen
-- **[UPDATE_INSTRUCTIONS.md](UPDATE_INSTRUCTIONS.md)** - Aktualisierungsanweisungen
+### 🇺🇸 **[English](en/README.md)**
+Complete English documentation with all technical details and guides.
 
-## 🗂️ Dokumentations-Struktur
+---
+
+## 📋 Quick Access / Schnellzugriff
+
+| Document Type | 🇩🇪 German | 🇺🇸 English |
+|---------------|-------------|-------------|
+| **📖 Overview** | [Übersicht](de/README.md) | [Overview](en/README.md) |
+| **📱 Camera Scanner** | [Kamera-Scanner](de/CAMERA_SCANNER.md) | [Camera Scanner](en/CAMERA_SCANNER.md) |
+| **📝 Changelog** | [Versionshistorie](de/CHANGELOG.md) | [Version History](en/CHANGELOG.md) |
+| **🛠️ Development** | [Entwickler-Guide](de/CLAUDE.md) | [Developer Guide](en/CLAUDE.md) |
+| **🚀 Deployment** | [Deployment-Fixes](de/DEPLOYMENT_FIXES.md) | [Deployment Fixes](en/DEPLOYMENT_FIXES.md) |
+| **🔒 HTTPS Setup** | [HTTPS-Setup](de/HTTPS_SETUP.md) | [HTTPS Setup](en/HTTPS_SETUP.md) |
+| **📋 Requirements** | [Anforderungen](de/PRD_Inventory_Management_System.md) | [Requirements](en/PRD_Inventory_Management_System.md) |
+| **🔄 Updates** | [Update-Anweisungen](de/UPDATE_INSTRUCTIONS.md) | [Update Instructions](en/UPDATE_INSTRUCTIONS.md) |
+
+---
+
+## 🗂️ Documentation Structure
 
 ```
 docs/
-├── README.md                           # Diese Übersicht
-├── CHANGELOG.md                        # Versionshistorie
-├── CAMERA_SCANNER.md                   # Kamera-Scanner Anleitung
-├── CLAUDE.md                          # AI Development Guide
-├── PRD_Inventory_Management_System.md # Product Requirements
-├── HTTPS_SETUP.md                     # HTTPS-Konfiguration
-├── DEPLOYMENT_FIXES.md                # Deployment-Lösungen
-└── UPDATE_INSTRUCTIONS.md             # Update-Anweisungen
+├── README.md              # Language selection (this file)
+├── de/                    # 🇩🇪 German documentation
+│   ├── README.md
+│   ├── CAMERA_SCANNER.md
+│   ├── CHANGELOG.md
+│   ├── CLAUDE.md
+│   ├── DEPLOYMENT_FIXES.md
+│   ├── HTTPS_SETUP.md
+│   ├── PRD_Inventory_Management_System.md
+│   └── UPDATE_INSTRUCTIONS.md
+└── en/                    # 🇺🇸 English documentation
+    ├── README.md
+    ├── CAMERA_SCANNER.md
+    ├── CHANGELOG.md
+    ├── CLAUDE.md
+    ├── DEPLOYMENT_FIXES.md
+    ├── HTTPS_SETUP.md
+    ├── PRD_Inventory_Management_System.md
+    └── UPDATE_INSTRUCTIONS.md
 ```
-
-## 🎯 Quick Links
-
-### Für Benutzer
-- [Kamera-Scanner verwenden](CAMERA_SCANNER.md#-verwendung)
-- [Neueste Funktionen](CHANGELOG.md)
-
-### Für Entwickler
-- [Development Setup](CLAUDE.md#quick-start-for-ai-development)
-- [Projektstruktur](CLAUDE.md#project-structure-overview)
-- [Technical Stack](CLAUDE.md#core-requirements-summary)
-
-### Für Administratoren
-- [HTTPS Setup](HTTPS_SETUP.md)
-- [Deployment Guide](DEPLOYMENT_FIXES.md)
-- [System Updates](UPDATE_INSTRUCTIONS.md)
-
-## 📋 Dokumentations-Standards
-
-- **Sprache**: Primär Deutsch, technische Begriffe in Englisch
-- **Format**: Markdown mit GitHub-Flavored Syntax
-- **Struktur**: Klare Hierarchie mit Emojis für bessere Navigation
-- **Updates**: Automatisch mit jeder Version aktualisiert
 
 ---
 
 **Version**: 0.4.1
-**Letzte Aktualisierung**: 2025-09-28
+**Last Updated**: 2025-09-28
 **Status**: Production Ready
