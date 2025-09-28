@@ -1,0 +1,59 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: inventory_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-inventory_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - inventory_network
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inventory_app
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+    ports:
+      - "${APP_PORT:-8501}:8501"
+    volumes:
+      - ./app:/app
+      - ./logs:/app/logs
+    depends_on:
+      - db
+    networks:
+      - inventory_network
+    restart: unless-stopped
+    command: streamlit run main.py --server.address 0.0.0.0 --server.port 8501
+
+  adminer:
+    image: adminer:4.8.1
+    container_name: inventory_adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - db
+    networks:
+      - inventory_network
+    restart: unless-stopped
+    profiles: ["development"]
+
+volumes:
+  postgres_data:
+
+networks:
+  inventory_network:
+    driver: bridge
