@@ -22,6 +22,13 @@ RUN apt-get update && apt-get install -y \
     libopenjp2-7-dev \
     libtiff5-dev \
     libffi-dev \
+    libzbar0 \
+    libgl1-mesa-dev \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies

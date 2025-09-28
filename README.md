@@ -2,7 +2,7 @@
 
 Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel und Standorte mit erweiterten Funktionen für Analytics, QR-Code-Generation und Benachrichtigungen.
 
-## 🚀 Version 0.4.0 - HTTPS-Only Security Release
+## 🚀 Version 0.4.1 - Camera Scanner Enhancement
 
 ### ✨ Features
 
@@ -20,6 +20,8 @@ Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel 
 
 #### 🎯 **Advanced Features**
 - **QR & Barcode Generation**: Automatische Code-Erstellung für alle Inventar-Items
+- **📷 Camera Scanner**: Live-Kamera-Scanning mit WebRTC für QR-Codes und Barcodes
+- **🖼️ Image Scanner**: Upload und Scanning von Bildern mit automatischer Code-Erkennung
 - **Import/Export**: CSV/JSON Im- und Export mit Template-System
 - **Backup & Archivierung**: Automatische Datensicherung mit Komprimierung
 - **Bulk Operations**: Massenoperationen für effiziente Datenverwaltung
@@ -40,6 +42,7 @@ Ein umfassendes, professionelles Inventarverwaltungssystem für Hardware, Kabel 
 - **Authentication**: Session-based mit bcrypt
 - **Analytics**: Pandas + Plotly für Visualisierungen
 - **QR/Barcode**: qrcode + python-barcode + Pillow
+- **Camera Scanning**: OpenCV + pyzbar + streamlit-webrtc + av
 - **PDF Generation**: ReportLab
 
 ## 🚦 Quick Start

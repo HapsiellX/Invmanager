@@ -5,6 +5,32 @@ Alle wichtigen Änderungen an diesem Projekt werden in dieser Datei dokumentiert
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 und dieses Projekt folgt [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1] - 2025-09-28 - Camera Scanner Enhancement
+
+### 📷 Added - Camera Scanner Features
+- **Live Camera Scanner**: WebRTC-basiertes Echtzeit-Scanning von QR-Codes und Barcodes
+- **Image Upload Scanner**: Upload und automatische Erkennung von Codes in Bildern
+- **Multi-Format Support**: QR, Code128, Code39, EAN13, Data Matrix, PDF417
+- **Database Integration**: Automatische Lookup von gescannten Codes in der Inventardatenbank
+- **Mobile Support**: Optimiert für Front-/Rückkamera auf Mobilgeräten
+
+### 🛠️ Added - Technical Dependencies
+- **OpenCV**: Computer Vision Bibliothek für Bildverarbeitung
+- **pyzbar**: ZBar barcode reader für Code-Erkennung
+- **streamlit-webrtc**: WebRTC Integration für Browser-Kamera-Zugriff
+- **av**: Audio/Video Streaming Library
+- **System Libraries**: libzbar0, libgl1-mesa-dev, libglib2.0-0, libsm6, libxext6, libxrender-dev, libgomp1
+
+### 🔧 Fixed
+- **Docker Dependencies**: System-Bibliotheken für Kamera-Scanning korrekt installiert
+- **Import Robustness**: Fallback-Funktionen für fehlende Scanner-Abhängigkeiten
+- **Scanner Integration**: Vereinfachte und robustere Scanner-Modi-Auswahl
+
+### 📖 Updated
+- **Documentation**: Neue CAMERA_SCANNER.md mit umfassender Anleitung
+- **Requirements**: Scanner-Abhängigkeiten zu requirements.txt hinzugefügt
+- **Dockerfile**: System-Bibliotheken für OpenCV und ZBar
+
 ## [0.4.0] - 2025-01-XX - HTTPS-Only Security Release
 
 ### 🔐 Added - Security Features

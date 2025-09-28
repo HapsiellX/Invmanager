@@ -11,6 +11,25 @@ from core.security import require_auth, require_role
 from core.database import get_db
 from .services import get_qr_barcode_service, QR_AVAILABLE, BARCODE_AVAILABLE, PIL_AVAILABLE
 
+# Import scanner module if available
+try:
+    from .scanner import show_camera_scanner, show_image_scanner, PYZBAR_AVAILABLE, WEBRTC_AVAILABLE
+    SCANNER_AVAILABLE = True
+except ImportError as e:
+    print(f"Scanner import error: {e}")
+    SCANNER_AVAILABLE = False
+    PYZBAR_AVAILABLE = False
+    WEBRTC_AVAILABLE = False
+
+    # Create placeholder functions
+    def show_camera_scanner(qr_service=None):
+        st.error("❌ Kamera-Scanner nicht verfügbar - Abhängigkeiten fehlen")
+        st.info("Führen Sie `pip install opencv-python pyzbar streamlit-webrtc av` aus")
+
+    def show_image_scanner(qr_service=None):
+        st.error("❌ Bild-Scanner nicht verfügbar - Abhängigkeiten fehlen")
+        st.info("Führen Sie `pip install opencv-python pyzbar` aus")
+
 
 @require_auth
 def show_qr_barcode_page():
@@ -75,6 +94,7 @@ def show_qr_barcode_page():
 def show_dependency_status():
     """Show status of required dependencies"""
     with st.expander("📋 Systemvoraussetzungen"):
+        st.write("### Code Generation")
         col1, col2, col3 = st.columns(3)
 
         with col1:
@@ -94,6 +114,33 @@ def show_dependency_status():
             st.write(f"**PIL/Pillow:** {status}")
             if not PIL_AVAILABLE:
                 st.code("pip install Pillow")
+
+        st.write("### Camera Scanning")
+        col4, col5, col6 = st.columns(3)
+
+        with col4:
+            status = "✅ Installiert" if WEBRTC_AVAILABLE else "❌ Nicht installiert"
+            st.write(f"**WebRTC:** {status}")
+            if not WEBRTC_AVAILABLE:
+                st.code("pip install streamlit-webrtc av")
+
+        with col5:
+            status = "✅ Installiert" if PYZBAR_AVAILABLE else "❌ Nicht installiert"
+            st.write(f"**PyZBar:** {status}")
+            if not PYZBAR_AVAILABLE:
+                st.code("pip install pyzbar")
+
+        with col6:
+            try:
+                import cv2
+                CV2_AVAILABLE = True
+            except ImportError:
+                CV2_AVAILABLE = False
+
+            status = "✅ Installiert" if CV2_AVAILABLE else "❌ Nicht installiert"
+            st.write(f"**OpenCV:** {status}")
+            if not CV2_AVAILABLE:
+                st.code("pip install opencv-python")
 
 
 def show_inventory_labels_tab(qr_service):
@@ -491,35 +538,27 @@ def show_barcode_generator_tab(qr_service):
 
 
 def show_code_scanner_tab(qr_service):
-    """Show code scanner functionality"""
+    """Show enhanced code scanner functionality with camera support"""
     st.subheader("🔍 Code Scanner")
 
     st.info("Scannen Sie QR-Codes oder Barcodes mit Ihrer Kamera oder laden Sie ein Bild hoch.")
 
-    # Scanner mode
+    # Scanner mode selection - always show all options
     scanner_mode = st.radio(
         "Scanner Modus:",
-        ["Bild Upload", "Manuelle Eingabe"],
+        ["📷 Kamera Scanner", "🖼️ Bild Upload", "✏️ Manuelle Eingabe"],
         key="scanner_mode"
     )
 
-    if scanner_mode == "Bild Upload":
-        uploaded_file = st.file_uploader(
-            "Bild mit QR-Code oder Barcode hochladen:",
-            type=['png', 'jpg', 'jpeg'],
-            key="scanner_upload"
-        )
+    if scanner_mode == "📷 Kamera Scanner":
+        # Always call show_camera_scanner (will show error if not available)
+        show_camera_scanner(qr_service)
 
-        if uploaded_file is not None:
-            st.image(uploaded_file, caption="Hochgeladenes Bild", use_column_width=True)
+    elif scanner_mode == "🖼️ Bild Upload":
+        # Always call show_image_scanner (will show error if not available)
+        show_image_scanner(qr_service)
 
-            if st.button("🔍 Code scannen", key="scan_upload"):
-                # In a real implementation, you would use OpenCV or a similar library
-                # to decode QR codes/barcodes from the image
-                st.warning("Automatisches Scannen aus Bildern erfordert zusätzliche Bibliotheken (opencv-python, pyzbar)")
-                st.info("Bitte verwenden Sie die manuelle Eingabe oder installieren Sie die erforderlichen Scanner-Bibliotheken")
-
-    else:  # Manual input
+    else:  # Manual input (always available)
         scanned_data = st.text_area(
             "Gescannte Daten eingeben:",
             placeholder="Fügen Sie hier die gescannten Daten ein...",
